@@ -1,0 +1,81 @@
+/*
+Program to multiply two very large numbers that can be stored even in unsigned long double
+*/
+
+public class LargeMultiply {
+    public String multiply(String num1, String num2) {
+        String result = "";
+        int[] resultArr = new int[num1.length()+num2.length()];
+        int[] bigNumArr = new int[0];
+        int[] smallNumArr = new int[0];
+        if(num1.length()==0||num2.length()==0)
+        {
+            result = "";
+        }
+        else if(num1.length()<num2.length()) { //num 2 bigger
+            bigNumArr = new int[num2.length()];
+            int i=0;
+            for (char ch:num2.toCharArray()){
+                bigNumArr[i++] = Character.getNumericValue(ch);
+            }
+            i=0;
+            smallNumArr = new int[num1.length()];
+            for (char ch:num1.toCharArray()){
+                smallNumArr[i++] = Character.getNumericValue(ch);
+            }
+        }
+        else { // num 1 >= num 2 by length
+            bigNumArr = new int[num1.length()];
+            smallNumArr = new int[num2.length()];
+
+            int i=0;
+            for (char ch:num1.toCharArray()){
+                bigNumArr[i++] = Character.getNumericValue(ch);
+            }
+            i=0;
+            for (char ch:num2.toCharArray()){
+                smallNumArr[i++] = Character.getNumericValue(ch);
+            }
+        }
+
+        int k = resultArr.length;
+        for(int i=smallNumArr.length-1;i>=0;i--){
+            int l = k-1;
+            int carry = 0;
+            for(int j=bigNumArr.length-1;j>=0;j--){
+                int temp = (bigNumArr[j]*smallNumArr[i]) + resultArr[l] + carry;
+                if(temp>=10){
+                    resultArr[l] = temp%10;
+                    carry = temp/10;
+                }
+                else {
+                    resultArr[l] = temp;
+                    carry = 0;
+                }
+                l--;
+            }
+
+            if(carry>0)
+                resultArr[l] = carry;
+
+            k = k-1;
+        }
+
+        return getNum(resultArr);
+    }
+
+    private String getNum(int[] arr){
+        StringBuilder str = new StringBuilder();
+        boolean zero = false;
+        for(int num: arr){
+            if(zero || num!=0){
+                str.append(num);
+                zero = true;
+            }
+        }
+        String s = str.toString();
+        if(s.isEmpty())
+            s="0";
+        return s;
+    }
+}
