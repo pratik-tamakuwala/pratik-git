@@ -1,0 +1,30 @@
+'''
+Web Crawler to collect data from baltimore sun's table of recent homicide
+'''
+
+import requests
+from bs4 import BeautifulSoup
+import json
+
+page = requests.get("http://data.baltimoresun.com/news/police/homicides/recenthundred.php")
+soup = BeautifulSoup(page.content, 'html.parser')
+#print(soup.prettify());
+html = list(soup.children)[3]
+body = list(html.children)[3]
+bodyImp = list(body.children)[11]
+table = list(bodyImp.children)[1]
+masterList = []
+for tableRow in list(table.children):
+
+	slaveList= [
+	list(tableRow.children)[0].get_text(),
+	list(tableRow.children)[1].get_text(),
+	list(tableRow.children)[2].get_text(),
+	list(tableRow.children)[3].get_text(),
+	list(tableRow.children)[4].get_text(),
+	list(tableRow.children)[5].get_text()]
+
+	masterList.append(slaveList)
+
+abc = json.dumps({'results':masterList})
+print(abc)
