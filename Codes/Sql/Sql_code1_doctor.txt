@@ -1,0 +1,174 @@
+------ setup
+drop table appointment_service cascade constraints;
+drop table appointment cascade constraints;
+drop table service cascade constraints;
+drop table availability cascade constraints;
+drop table patient cascade constraints;
+drop table doctor cascade constraints;
+
+create table doctor
+(did int,
+dname varchar(50),
+dphone varchar(20),
+primary key(did));
+
+insert into doctor values(1,'Dr. Rao', '410-435-1923');
+insert into doctor values(2,'Dr. Adam', '410-435-1922');
+insert into doctor values(3,'Dr. Smith', '410-435-1921');
+
+create table patient
+(pid int, 
+pname varchar(50),
+paddress varchar(200),
+pphone varchar(20),
+pemail varchar(50),
+primary key(pid));
+
+insert into patient values(1,'Susan','1234 Hilltop Rd, Catonsville', '410-456-1122','susan@gmail.com');
+-- son of susan
+insert into patient values(2,'Nathan','1234 Hilltop Rd, Catonsville', '410-456-1122','susan@gmail.com');
+
+insert into patient values(3,'Ella','222 Frederick Rd, Catonsville', '410-456-8876','ella@gmail.com');
+
+insert into patient values(4,'Carl','222 Frederick Rd, Catonsville', '410-456-8876','ella@gmail.com');
+
+create table availability 
+(did int, 
+adate date,
+start_time timestamp,
+end_time timestamp,
+primary key (did, adate),
+foreign key(did) references doctor);
+
+insert into availability values(1, date '2018-2-1', timestamp '2018-2-1 9:00:00.00', timestamp '2018-2-1 17:00:00.00');
+insert into availability values(1, date '2018-2-2', timestamp '2018-2-2 9:00:00.00', timestamp '2018-2-2 17:00:00.00');
+insert into availability values(1, date '2018-2-3', timestamp '2018-2-3 9:00:00.00', timestamp '2018-2-3 17:00:00.00');
+
+insert into availability values(2, date '2018-2-1', timestamp '2018-2-1 9:00:00.00', timestamp '2018-2-1 17:00:00.00');
+insert into availability values(2, date '2018-2-2', timestamp '2018-2-2 9:00:00.00', timestamp '2018-2-2 17:00:00.00');
+insert into availability values(2, date '2018-2-3', timestamp '2018-2-3 9:00:00.00', timestamp '2018-2-3 17:00:00.00');
+
+create table service
+(sid int, 
+sdecription varchar(200),
+primary key(sid));
+
+insert into service values(1,'office visit');
+insert into service values(2,'flu shot');
+insert into service values(3,'physical exam');
+
+create table appointment 
+(aid int, 
+pid int, 
+did int, 
+reason_for_visit varchar(200), 
+start_time timestamp, end_time timestamp, 
+status int, -- 1 booked, 2 happended, 3 canceled
+primary key(aid),
+foreign key (pid) references patient,
+foreign key (did) references doctor);
+
+-- done
+insert into appointment values(1,1,1,'flu and low fever', timestamp '2018-2-1 9:00:00.00',
+timestamp '2018-2-1 9:30:00.00',2);
+
+-- done
+insert into appointment values(2,2,1,'flu shot', timestamp '2018-2-1 9:30:00.00',
+timestamp '2018-2-1 9:40:00.00',2);
+
+-- canceled
+insert into appointment values(3,3,2,'annual physical', timestamp '2018-2-1 9:00:00.00',
+timestamp '2018-2-1 9:30:00.00',3);
+
+-- booked 
+insert into appointment values(4,4,2,'annual physical', timestamp '2018-2-1 16:00:00.00',
+timestamp '2018-2-1 16:30:00.00',1);
+
+-- booked
+insert into appointment values(5,1,1,'follow up', timestamp '2018-2-3 12:00:00.00',
+timestamp '2018-2-3 12:30:00.00',1);
+
+-- booked
+insert into appointment values(6,3,2,'annual physical', timestamp '2018-2-3 9:00:00.00',
+timestamp '2018-2-3 9:30:00.00',1);
+
+insert into appointment values(7,3,2,'flu like symptom', timestamp '2018-2-3 11:00:00.00',
+timestamp '2018-2-3 11:30:00.00',1);
+
+-- these are fictitious appointment testing new appointment 
+
+insert into appointment values(8,2,1,'follow up', timestamp '2018-2-3 09:00:00.00',
+timestamp '2018-2-3 12:00:00.00',1);
+
+
+insert into appointment values(9,2,1,'follow up', timestamp '2018-2-3 12:30:00.00',
+timestamp '2018-2-3 16:30:00.00',1);
+
+create table appointment_service
+(
+aid int, 
+sid int,
+primary key(aid, sid),
+foreign key(aid) references appointment,
+foreign key(sid) references service 
+);
+
+insert into appointment_service values(1, 1);
+insert into appointment_service values(2, 2);
+insert into appointment_service values(3, 3);
+insert into appointment_service values(3, 2);
+
+commit;
+
+
+-----------------------SQL Queries------------------------------------------------
+
+-- Return all dates that Dr. Rao is available in February 2018 
+
+select a1.adate 
+from doctor d1, availability a1
+where d1.did=a1.did and d1.dname='Dr. Rao' and
+a1.adate >= date '2018-02-01' and a1.adate < date '2018-03-01';
+
+
+-- return all booked appointment start time for Susan.
+
+select ap1.start_time 
+from patient p1, appointment ap1
+where p1.pid=ap1.pid and
+p1.pname='Susan' and ap1.status=1;
+
+
+-- return number of booked or happened appointments Dr. Adam has on each day in Febuary 2018
+
+select trunc(ap1.start_time) as Start_Time, count(ap1.aid) as Number_of_Appointments
+from appointment ap1, doctor d1
+where ap1.did=d1.did and
+d1.dname='Dr. Adam' and ap1.status in (1,2) and 
+trunc(ap1.start_time) >= date '2018-02-01' and
+trunc(ap1.start_time) < date '2018-03-01' 
+group by trunc(ap1.start_time);
+
+
+-- return dates that Dr. Adam has at least 2 booked or happened appointment
+
+select trunc(ap1.start_time) as DATES
+from appointment ap1, doctor d1
+where ap1.did=d1.did and
+d1.dname='Dr. Adam' and ap1.status in (1,2)
+group by trunc(ap1.start_time)
+having count(ap1.status)>=2;
+
+
+-- List all back-to-back appointments for Dr. Rao
+
+select ap1.aid, ap1.start_time, ap1.end_time, ap2.aid, ap2.start_time, ap2.end_time
+from appointment ap1, appointment ap2, doctor d1
+where ap1.did=d1.did and ap2.did=d1.did and d1.dname='Dr. Rao' and  
+ap1.status in (1,2) and ap2.status in (1,2) 
+and ap1.end_time=ap2.start_time;
+
+---------------------------------------------------------------------------------------
+
+commit;
+

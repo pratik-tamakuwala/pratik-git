@@ -1,0 +1,315 @@
+drop table Trip_Detail;
+drop table Flight_Reservation;
+drop table passenger;
+drop table schedule;
+drop table flight;
+drop table airport;
+drop table airline;
+
+
+create table airline
+(
+alcode char(2),
+alname varchar(50),
+primary key (alcode)
+);
+
+insert into airline values
+('UA', 'United');
+
+insert into airline values
+('DL', 'Delta');
+
+insert into airline values
+('NK', 'Spirit');
+
+create table airport
+(
+apcode char(3),
+apname varchar(50),
+city varchar(50),
+state varchar(50),
+country varchar(50),
+primary key(apcode));
+
+
+insert into airport values
+('BWI', 'Baltimore Washington Airport', 'Baltimore', 'MD', 'USA');
+
+insert into airport values
+('DTW', 'Detroit Airport','Detroit', 'MI', 'USA');
+
+insert into airport values
+('LAX', 'Los Angeles Airport','Los Angeles','CA','USA');
+
+insert into airport values
+('PVG', 'Shanghai Pudong Airport','Shanghai','Shanghai','China');
+
+insert into airport values
+('EWR', 'Newark Airport','Newark','NJ','USA');
+
+
+create table flight
+(
+fnumber varchar(20),
+alcode char(2),
+departure_apcode char(3), 
+arrival_apcode char(3),
+primary key (fnumber),
+foreign key(alcode) references airline,
+foreign key(departure_apcode) references airport,
+foreign key(arrival_apcode) references airport
+);
+
+insert into flight values
+('UA 3938','UA','BWI','EWR');
+
+insert into flight values
+('UA 86','UA','EWR','PVG');
+
+insert into flight values
+('UA 87','UA','PVG','EWR');
+
+insert into flight values
+('UA 4144','UA','EWR','BWI');
+
+insert into flight values
+('DL 2429','DL','BWI','DTW');
+
+insert into flight values
+('DL 583','DL','DTW','PVG');
+
+insert into flight values
+('DL 582','DL','PVG','DTW');
+
+insert into flight values
+('DL 1906','DL','DTW','BWI');
+
+insert into flight values
+('NK 141','NK','BWI','LAX');
+
+insert into flight values
+('NK 128','NK','LAX','BWI');
+
+insert into flight values
+('UA 1623','UA','BWI','LAX');
+
+insert into flight values
+('UA 2020','UA','LAX','BWI');
+
+create table schedule
+(
+sid int, 
+fnumber varchar(20), 
+departure_time timestamp with time zone,
+arrival_time timestamp with time zone,
+price number,
+primary key(sid),
+foreign key(fnumber) references flight
+);
+
+insert into schedule values
+(1, 'UA 3938', timestamp '2017-9-12 06:41:00.00 -05:00',timestamp '2017-9-12 07:50:00.00 -05:00',120);
+
+insert into schedule values
+(2, 'UA 86', timestamp '2017-9-12 10:45:00.00 -05:00',timestamp '2017-9-13 13:40:00.00 +08:00',400);
+
+insert into schedule values
+(3, 'UA 87', timestamp '2017-10-12 15:40:00.00 +08:00',timestamp '2017-10-12 18:00:00.00 -05:00',300);
+
+insert into schedule values
+(4, 'UA 4144', timestamp '2017-10-12 22:00:00.00 -05:00',timestamp '2017-10-12 23:20:00.00 -05:00',200);
+
+insert into schedule values
+(5, 'DL 2429', timestamp '2017-9-12 13:00:00.00 -05:00',timestamp '2017-9-12 14:30:00.00 -05:00',140);
+
+insert into schedule values
+(6, 'DL 583', timestamp '2017-9-12 16:30:00.00 -05:00',timestamp '2017-9-13 18:50:00.00 +08:00',500);
+
+insert into schedule values
+(7, 'DL 582', timestamp '2017-10-12 11:40:00.00 +08:00',timestamp '2017-10-12 13:40:00.00 -05:00',400);
+
+insert into schedule values
+(8, 'DL 1906', timestamp '2017-10-12 15:20:00.00 -05:00',timestamp '2017-10-12 17:00:00.00 -05:00',150);
+
+insert into schedule values
+(9, 'NK 141', timestamp '2017-11-12 08:40:00.00 -05:00',timestamp '2017-11-12 11:30:00.00 -08:00',120);
+
+insert into schedule values
+(10, 'NK 128', timestamp '2017-11-16 21:30:00.00 -08:00',timestamp '2017-11-17 05:30:00.00 -05:00',120);
+
+insert into schedule values
+(11, 'UA 1623', timestamp '2017-11-12 06:30:00.00 -05:00',timestamp '2017-11-12 09:00:00.00 -08:00',150);
+
+insert into schedule values
+(12, 'UA 2020', timestamp '2017-11-16 21:30:00.00 -08:00',timestamp '2017-11-17 05:30:00.00 -05:00',150);
+
+insert into schedule values
+(13, 'UA 3938', timestamp '2017-11-12 06:41:00.00 -05:00',timestamp '2017-11-12 07:50:00.00 -05:00',120);
+
+insert into schedule values
+(14, 'UA 4144', timestamp '2017-11-12 22:00:00.00 -05:00',timestamp '2017-11-12 23:20:00.00 -05:00',200);
+
+insert into schedule values
+(15, 'DL 2429', timestamp '2017-11-12 13:00:00.00 -05:00',timestamp '2017-11-12 14:30:00.00 -05:00',140);
+
+insert into schedule values
+(16, 'NK 128', timestamp '2017-11-11 21:30:00.00 -08:00',timestamp '2017-11-12 05:30:00.00 -05:00',120);
+
+insert into schedule values
+(17, 'UA 2020', timestamp '2017-11-11 21:30:00.00 -08:00',timestamp '2017-11-12 05:30:00.00 -05:00',150);
+
+insert into schedule values
+(18, 'DL 1906', timestamp '2017-11-12 15:20:00.00 -05:00',timestamp '2017-11-12 17:00:00.00 -05:00',150);
+
+create table passenger
+(pid int,
+pname varchar(50),
+phone varchar(20),
+primary key(pid));
+
+insert into passenger values
+(1, 'Jeff', '410-465-1928');
+
+insert into passenger values
+(2, 'Erin', '410-465-2234');
+
+create table flight_reservation
+(
+rid int, 
+pid int, 
+num_passengers int, 
+origin_apcode char(3), 
+destination_apcode char(3), 
+departure_date date, 
+return_date date, 
+total number, --- total price, need to be computed from each flight leg price
+primary key (rid),
+foreign key(pid) references passenger,
+foreign key (origin_apcode) references airport,
+foreign key (destination_apcode) references airport
+);
+
+insert into flight_reservation values
+(1, 1, 4, 'BWI','PVG',date '2017-09-12', date '2017-10-12',0);
+
+insert into flight_reservation values
+(2, 1, 1, 'BWI','LAX',date '2017-11-12', date '2017-11-16',0);
+
+insert into flight_reservation values
+(3, 2, 4, 'BWI','LAX',date '2017-11-12', date '2017-11-16',0);
+
+create table trip_detail
+(
+rid int, 
+sid int, 
+flag int, 
+leg int,
+primary key(rid,sid),
+foreign key (rid) references flight_reservation,
+foreign key (sid) references schedule
+);
+
+insert into trip_detail values
+(1,1,1,1);
+insert into trip_detail values
+(1,2,1,2);
+insert into trip_detail values
+(1,3,2,1);
+insert into trip_detail values
+(1,4,2,2);
+
+insert into trip_detail values
+(2,9,1,1);
+insert into trip_detail values
+(2,10,2,1);
+insert into trip_detail values
+(3,11,1,1);
+insert into trip_detail values
+(3,12,2,1);
+
+
+commit;
+
+
+-----query 1------------------------------------------------------------------------------------------------------------
+select s.fnumber as Flight_Number,departure_time,arrival_time,price
+from schedule s,flight f
+where s.fnumber=f.fnumber and departure_apcode='BWI' and arrival_apcode='LAX' and trunc(departure_time)='12-11-17';
+
+-----query 2------------------------------------------------------------------------------------------------------------
+select pname as Passenger_Name, count(rid) as Number_Of_Reservations_Made
+from flight_reservation r, passenger p
+where r.pid=p.pid
+group by pname;
+
+
+-----query 3------------------------------------------------------------------------------------------------------------
+select pname as Passenger_Names
+from flight_reservation r, passenger p
+where r.pid=p.pid
+group by pname
+having count(rid)>=2;
+
+
+-----query 4------------------------------------------------------------------------------------------------------------
+select departure_date,return_date,a.apname origin_airport,a1.apname destination_airport
+from passenger p
+join flight_reservation f
+on p.pid=f.pid
+join airport a
+on  f.origin_apcode=a.apcode
+join airport a1
+on f.destination_apcode=a1.apcode
+where pname='Jeff';
+
+-----query 5------------------------------------------------------------------------------------------------------------
+select t.rid,t.flag,t.leg,s.fnumber as flight_number, a.apname as departure_airport_name,departure_time, a1.apname as arrival_airport_name, arrival_time
+from schedule s
+join flight f
+on s.fnumber=f.fnumber
+join airport a
+on f.departure_apcode=a.apcode
+join airport a1
+on f.arrival_apcode=a1.apcode
+join trip_detail t
+on s.sid=t.sid
+join flight_reservation fr
+on t.rid=fr.rid and fr.rid=1
+order by flag,leg;
+
+
+-----query 6------------------------------------------------------------------------------------------------------------
+select f.fnumber,s.price,s.departure_time,s.arrival_time
+from flight f
+join schedule s
+on f.fnumber=s.fnumber
+and s.price = ( select min(price)from schedule s1)
+where f.departure_apcode='BWI'and f.arrival_apcode='LAX' and trunc(departure_time)='12-11-17';
+
+
+-----query 7------------------------------------------------------------------------------------------------------------
+select s.fnumber as Flight_Number,departure_time,arrival_time,extract(hour from (arrival_time - departure_time))||':'||extract(minute from (arrival_time - departure_time))||' hrs' as duration
+from schedule s,flight f
+where s.fnumber=f.fnumber and departure_apcode='BWI' and arrival_apcode='LAX' and trunc(departure_time)='12-11-17'
+and (arrival_time - departure_time) = (select min (arrival_time - departure_time) from schedule s,flight f
+where s.fnumber=f.fnumber and departure_apcode='BWI' and arrival_apcode='LAX' and trunc(departure_time)='12-11-17');
+
+
+
+
+-----query 8------------------------------------------------------------------------------------------------------------
+select extract(hour from (s2.departure_time - s1.arrival_time))||':'||extract(minute from (s2.departure_time - s1.arrival_time))||' hrs' as connection_time,f.departure_apcode as connecting_airport_code,CASE t.flag when 1 then 'Outbound' else 'Inbound' end as trip_type
+from schedule s1, schedule s2, flight f, trip_detail t
+where s1.sid = (Select sid from trip_detail where rid = (select rid from trip_detail where sid = s2.sid and rownum = 1) and leg = (select leg from trip_detail where sid = s2.sid)-1 and flag = (select flag from trip_detail where sid = s2.sid) and rownum = 1)  
+and s2.sid in (
+Select sid from trip_detail
+where rid in (Select rid from flight_reservation where pid in (select pid from passenger where pname='Jeff'))
+and leg>1
+)
+and s2.fnumber=f.fnumber
+and s2.sid=t.sid
+and t.rid in (Select rid from flight_reservation where pid in (select pid from passenger where pname='Jeff'));
+
+
+commit;

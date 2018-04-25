@@ -1,0 +1,78 @@
+-------- Procedure
+
+--- a PL/SQL procedure that given a doctor's name, a date, and a length of appointment , print out the first available time for an appointment with that length for that doctor on that date. 
+
+create or replace procedure first_appointment_time(v_dname varchar, v_date date, v_length interval day to second)
+as
+cursor c1 is select start_time, end_time 
+from appointment a, doctor d
+where a.did = d.did and dname = v_dname and status <3 and trunc(start_time)=v_date
+order by start_time;
+v_start timestamp;
+v_end timestamp; 
+r c1%rowtype;
+found int;
+begin
+  select start_time, end_time into v_start, v_end 
+  from availability a, doctor d
+  where a.did = d.did and dname = v_dname and adate = v_date;
+  found := 0;
+  open c1;
+  loop
+	fetch c1 into r;
+	exit when c1%notfound;
+	if v_start + v_length <= r.start_time then 
+	 dbms_output.put_line('First available time is ' || v_start);
+	 found :=1;
+	 exit; -- found the time
+	else --- now there is not enough time 
+	 v_start := r.end_time; -- update new gap to end time of appointment 	 
+	end if;	
+  end loop;
+  close c1;
+  -- if not found yet, check time between v_start and v_end 
+  if found = 0 then 
+    if v_start + v_length <= v_end then 
+	 dbms_output.put_line('First available time is ' || v_start);
+	 found :=1;	
+	else 
+	  dbms_output.put_line('Cannot find available time ');
+	end if;
+  end if;	
+exception
+ when no_data_found then 
+  dbms_output.put_line('Dr. Rao is not available that day');
+end;
+
+exec first_appointment_time('Dr. Rao', date '2018-2-1',interval '30' minute);
+
+
+-------------- Function ---------------------------------------------------------
+
+
+-- a PL/SQL function that given a doctor's ID and a date, compute the total time of that day the doctor devoted to appointment. 
+
+create or replace function total_appointment_time(v_did int, v_date date)
+return number
+IS
+v_total number;
+v_dname doctor.dname%type;
+begin
+-- check validity of v_did
+ select dname into v_dname from doctor where did = v_did; 
+ select sum(extract(hour from (end_time - start_time))*60+ extract(minute from (end_time - start_time))) into v_total
+ from appointment  
+ where did = v_did and trunc(start_time) = v_date and status < 3;
+ dbms_output.put_line(v_total);
+ return v_total;
+ exception 
+ when no_data_found then 
+  dbms_output.put_line('Invalid did'); 
+  return 0;
+end; 
+
+declare 
+ x number;
+begin
+ x:= total_appointment_time(1,date '2018-2-1'); 
+end; 
