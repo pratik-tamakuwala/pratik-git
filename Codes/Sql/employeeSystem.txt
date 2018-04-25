@@ -1,0 +1,166 @@
+--setup
+drop table emp_proj;
+drop table proj;
+drop table emp;
+drop table dept;
+
+create table dept (
+	did int,
+	dname varchar(30),
+	primary key (did)
+	);
+
+insert into dept 
+values (1,'IT');
+insert into dept
+values (2, 'HR');
+
+create table emp (
+	eid int,
+	ename varchar(30),
+	did int, -- department id
+	hiredate date,
+	salary number,
+	primary key (eid),
+	foreign key (did) references dept(did));
+
+create table proj (
+	pid int,
+	pname varchar(30),
+	startdate date,
+	enddate date,
+	primary key (pid));
+
+create table emp_proj (
+	eid int,
+	pid int,
+	primary key (eid,pid),
+	foreign key (pid) references proj);
+
+insert into emp
+values(1,'jeff',1,date '2005-1-1',70000);
+
+insert into emp
+values(2,'susan',2,date '2005-6-1',50000);
+
+insert into emp
+values(3,'bob',1,date '2000-1-1',90000);
+
+insert into emp
+values(4,'steve',1,date '2006-1-1',60000);
+
+	
+insert into proj
+values (1,'umbc student db',date '2006-9-1',null);
+
+insert into proj
+values (2, 'umbc library',date '2005-9-1', date '2006-7-1');
+
+insert into emp_proj
+values (1, 2);
+
+insert into emp_proj
+values (3, 2);
+
+insert into emp_proj
+values (1, 1);
+
+insert into emp_proj
+values (4, 1);
+
+insert into emp_proj
+values (2, 1);
+
+-- sql ,
+
+-- Return the names of the employees working at IT department
+
+select ename
+from dept, emp
+where dname='IT' and dept.did = emp.did;
+
+-- missing tables
+
+select pname
+from proj, emp, emp_proj
+where ename = 'jeff' and proj.pid = emp_proj.pid and emp.eid = emp_proj.eid
+
+-- people hired after jeff
+
+select e2.ename
+from emp e1, emp e2
+where e1.ename = 'jeff' and e1.hiredate < e2.hiredate;
+
+
+
+-- Return the number of employees
+
+select count(*) from emp;
+
+-- Return average salary of employees
+
+select avg(salary) from emp;
+
+-- Return the highest salary
+
+select max(salary) from emp;
+
+
+-- Return the highest salary for each department
+
+select did, max(salary)
+from emp
+group by did;
+
+-- if want dname
+select dname, max(salary)
+from emp, dept
+where emp.did = dept.did
+group by dept.did,dname;
+
+--- low avg salary dept
+
+select did
+from emp
+group by did
+having avg(salary) < 55000;
+
+-- Return lastlogin + 6 months
+select lastlogin, lastlogin + interval '6' month
+from emp2;
+
+-- Return lastlogin + 1 week
+select lastlogin, lastlogin + interval '7' day
+from emp2;
+
+-- Return lastlogin + 2 hour 30 minutes
+select lastlogin, lastlogin + interval '2:30' hour to minute
+from emp2;
+
+--Return employees who work at UMBC library project
+
+select ename
+from emp e, emp_proj ep, proj p
+where e.eid = ep.eid and ep.pid = p.pid and pname = 'umbc library';
+
+--Return employees who work on the same project with Jeff
+
+select e2.ename
+from emp e1, emp e2, emp_proj ep1, emp_proj ep2
+where e1.eid = ep1.eid and ep1.pid = ep2.pid and ep2.eid = e2.eid and e1.ename = 'bob'
+and e1.eid <> e2.eid;
+
+-- Return names of projects with at least three employees working on it
+select pname
+from proj p, emp_proj ep
+where p.pid = ep.pid
+group by pname
+having count(*) >= 3;
+
+-- Give employees who work on the umbc library project a 10% salary raise
+update emp
+set salary = salary * 1.1
+where eid in (
+select ep.eid
+from emp_proj ep, proj p
+where ep.pid = p.pid and pname = 'umbc library');
