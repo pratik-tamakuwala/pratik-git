@@ -1,0 +1,1320 @@
+-- A) Drop Table Script
+
+Drop table tbl_school_bus_stop;
+Drop table tbl_message;
+Drop table tbl_user;
+Drop table tbl_student;
+Drop table tbl_house;
+Drop table tbl_bus_stop;
+Drop table tbl_route;
+Drop table tbl_bus;
+Drop table tbl_driver;
+Drop table tbl_bus_company;
+Drop table tbl_school;
+Drop table tbl_school_type;
+
+
+-- B) Create Table Script
+
+create table tbl_school_type
+(
+	id int Primary key
+	,description varchar(60)
+);
+
+create table tbl_school
+(
+	schoolid int Primary key
+	,schooltypeid int
+	,schoolname varchar(100)
+	,address varchar(400) 
+	,city varchar(50)
+	,zip int
+	,phone int
+	,starttime INTERVAL DAY TO SECOND
+	,endtime INTERVAL DAY TO SECOND
+	,capacity int
+	,FOREIGN KEY (schooltypeid) REFERENCES tbl_school_type(id)
+);
+
+create table tbl_bus_company
+(
+	cid int Primary Key
+	,cname varchar(100)
+	,address varchar(400)
+	,city varchar(100)
+	,zip int
+	,phone int
+);
+
+create table tbl_driver
+(
+	id int Primary Key
+	,dname varchar(100)
+	,phone int
+	,companyid int
+	,FOREIGN KEY (companyid) REFERENCES tbl_bus_company(cid)
+);
+
+create table tbl_bus
+(
+	bid int Primary Key
+	,capacity int
+	,driverid int
+	,companyid int
+	,FOREIGN KEY (driverid) references tbl_driver(id)
+	,FOREIGN KEY (companyid) references tbl_bus_company(cid)
+);
+
+create table tbl_route
+(
+	rid int Primary Key
+	,busid int
+	,schoolid int
+	,noofstops int
+	,arrivaltime INTERVAL DAY TO SECOND
+	,departuretime INTERVAL DAY TO SECOND
+	,FOREIGN KEY (busid) references tbl_bus(bid)
+	,FOREIGN KEY (schoolid) references tbl_school(schoolid)
+);
+
+create table tbl_bus_stop
+(
+	busstopid int PRIMARY Key
+	,routeid int
+	,mseqno int
+	,aseqno int
+	,mstoptime INTERVAL DAY TO SECOND
+	,astoptime INTERVAL DAY TO SECOND
+	,description varchar(100)
+	,address varchar(400)
+	,city varchar(50)
+	,zip int
+	,FOREIGN KEY (routeid) references tbl_route(rid)
+);
+
+create table tbl_house
+(
+	houseid int Primary Key
+	,streetaddress varchar(100)
+	,city varchar(50)
+	,zip int
+	,busstopid int
+	,FOREIGN KEY (busstopid) references tbl_bus_stop(busstopid)
+);
+
+create table tbl_student
+(
+	id int Primary Key
+	,sname varchar(100)
+	,houseid int
+	,schoolid int
+	,takesbus int
+	,FOREIGN KEY (houseid) references tbl_house(houseid)
+	,FOREIGN KEY (schoolid) references tbl_school(schoolid)
+);
+
+create table tbl_user
+(
+	userid int Primary Key
+	,email varchar(100)
+	,phone int
+	,password varchar(100)
+	,houseid int
+	,FOREIGN KEY (houseid) references tbl_house(houseid)
+);
+
+create table tbl_message
+(
+	mid int Primary Key
+	,userid int
+	,messagetime timestamp
+	,mbody varchar(400)
+	,FOREIGN KEY (userid) references tbl_user(userid)
+);
+
+create table tbl_school_bus_stop
+(
+	schoolid int
+	,busstopid int
+	,PRIMARY KEY(schoolid,busstopid)
+	,FOREIGN KEY (schoolid) references tbl_school(schoolid)
+	,FOREIGN KEY (busstopid) references tbl_bus_stop(busstopid)
+);
+
+commit;
+
+
+--C) Insert Statement Scripts
+
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (1,25,1,1);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (2,35,2,2);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (3,35,5,2);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (4,25,6,1);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (5,30,3,3);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (6,30,4,4);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (7,35,1,3);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (8,25,1,3);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (9,15,6,4);
+Insert into IS620GROUP2.TBL_BUS (BID,CAPACITY,DRIVERID,COMPANYID) values (10,20,6,4);
+
+
+
+Insert into IS620GROUP2.TBL_BUS_COMPANY (CID,CNAME,ADDRESS,CITY,ZIP,PHONE) values (1,'AA Affordable Transportation','46 S Franklintown Rd','Baltimore',21223,4109459003);
+Insert into IS620GROUP2.TBL_BUS_COMPANY (CID,CNAME,ADDRESS,CITY,ZIP,PHONE) values (2,'Woodlawn Motor Coach Inc','6523 Baltimore National Pike','Catonsville',21228,4107743300);
+Insert into IS620GROUP2.TBL_BUS_COMPANY (CID,CNAME,ADDRESS,CITY,ZIP,PHONE) values (3,'US Coachways','26 South Street','Baltimore',21202,4105139833);
+Insert into IS620GROUP2.TBL_BUS_COMPANY (CID,CNAME,ADDRESS,CITY,ZIP,PHONE) values (4,'Superior Tours','7100 Milford Industrial Blvd','Pikesville',21208,4106021704);
+
+
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (1,1,1,3,'+00 07:00:00.000000','+00 11:30:00.000000','Arbutus Stop','Arbutus','Arbutus',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (2,1,2,2,'+00 07:10:00.000000','+00 11:20:00.000000','Maiden Choice Stop','Arbutus','Arbutus',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (3,1,3,1,'+00 07:20:00.000000','+00 11:15:00.000000','UMBC Admin Stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (4,2,1,2,'+00 07:00:00.000000','+00 15:10:00.000000','Catonsville Stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (5,5,2,1,'+00 11:20:00.000000','+00 17:40:00.000000','UMBC Hilltop Stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (6,6,1,3,'+00 08:00:00.000000','+00 13:30:00.000000','springroad stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (7,6,2,2,'+00 08:20:00.000000','+00 12:50:00.000000','UMBC Hilltop Stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (8,7,1,3,'+00 07:00:00.000000','+00 12:15:00.000000','UMBC poplar Stop','catonsville','catonsville',21225);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (9,7,2,2,'+00 07:15:00.000000','+00 11:50:00.000000','courtney road Stop','arbutus','arbutus',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (12,4,1,3,'+00 09:05:00.000000','+00 13:50:00.000000','Giants','Arbutus','Arbutus',21225);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (13,4,2,2,'+00 09:10:00.000000','+00 14:10:00.000000','Madien Choice','Arbutus','Arbutus',21225);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (14,4,3,1,'+00 09:15:00.000000','+00 14:30:00.000000','UMBC admin stop','Arbutus','Arbutus',21225);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (15,8,1,3,'+00 08:00:00.000000','+00 14:00:00.000000','UMBC admin Stop','catonsville','catonsville',21225);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (16,8,2,2,'+00 08:10:00.000000','+00 13:50:00.000000','Madien Choice','catonsville','catonsville',21225);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (17,8,3,1,'+00 08:20:00.000000','+00 13:40:00.000000','Weis','catonsville','catonsville',21225);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (18,9,1,3,'+00 09:00:00.000000','+00 15:15:00.000000','springroad stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (19,9,2,2,'+00 09:10:00.000000','+00 15:30:00.000000','UMBC Hilltop Stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (20,9,3,1,'+00 09:20:00.000000','+00 15:40:00.000000','UMBC poplar Stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (10,6,3,1,'+00 08:30:00.000000','+00 12:40:00.000000','UMBC admin Stop','Halethorpe','Halethorpe',21227);
+Insert into IS620GROUP2.TBL_BUS_STOP (BUSSTOPID,ROUTEID,MSEQNO,ASEQNO,MSTOPTIME,ASTOPTIME,DESCRIPTION,ADDRESS,CITY,ZIP) values (11,7,3,1,'+00 07:20:00.000000','+00 11:40:00.000000','UMBC admin Stop','catonsville','catonsville',21225);
+--------------------------------------------------------
+
+
+Insert into IS620GROUP2.TBL_DRIVER (ID,DNAME,PHONE,COMPANYID) values (1,'Joe Milano',4434675598,1);
+Insert into IS620GROUP2.TBL_DRIVER (ID,DNAME,PHONE,COMPANYID) values (2,'Russell Peters',4107762345,2);
+Insert into IS620GROUP2.TBL_DRIVER (ID,DNAME,PHONE,COMPANYID) values (3,'Jamie Oliver',4107132846,3);
+Insert into IS620GROUP2.TBL_DRIVER (ID,DNAME,PHONE,COMPANYID) values (4,'Rajesh Chaudhari',4435012404,4);
+Insert into IS620GROUP2.TBL_DRIVER (ID,DNAME,PHONE,COMPANYID) values (5,'Mike Jordan',4108836521,2);
+Insert into IS620GROUP2.TBL_DRIVER (ID,DNAME,PHONE,COMPANYID) values (6,'Arthur Doyle',4434615204,1);
+
+
+Insert into IS620GROUP2.TBL_HOUSE (HOUSEID,STREETADDRESS,CITY,ZIP,BUSSTOPID) values (1,'4781 Gateway Terrace','Arbutus',21227,1);
+Insert into IS620GROUP2.TBL_HOUSE (HOUSEID,STREETADDRESS,CITY,ZIP,BUSSTOPID) values (2,'4814 Aldate','Arbutus',21228,1);
+Insert into IS620GROUP2.TBL_HOUSE (HOUSEID,STREETADDRESS,CITY,ZIP,BUSSTOPID) values (3,'721 street','Arbutus',21240,3);
+Insert into IS620GROUP2.TBL_HOUSE (HOUSEID,STREETADDRESS,CITY,ZIP,BUSSTOPID) values (4,'840 street','Arbutus',21260,4);
+Insert into IS620GROUP2.TBL_HOUSE (HOUSEID,STREETADDRESS,CITY,ZIP,BUSSTOPID) values (5,'Chapel hill street','Arbutus',21240,5);
+Insert into IS620GROUP2.TBL_HOUSE (HOUSEID,STREETADDRESS,CITY,ZIP,BUSSTOPID) values (6,'4811 Gateway Terrace','Arbutus',21227,5);
+Insert into IS620GROUP2.TBL_HOUSE (HOUSEID,STREETADDRESS,CITY,ZIP,BUSSTOPID) values (7,'4820 fernley square','arbutus',21227,4);
+
+
+
+
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (1,1,5,3,'+00 07:50:00.000000','+00 11:00:00.000000');
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (2,2,4,2,'+00 10:50:00.000000','+00 17:10:00.000000');
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (3,3,3,3,'+00 09:20:00.000000','+00 13:40:00.000000');
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (4,4,1,4,'+00 09:20:00.000000','+00 13:40:00.000000');
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (5,5,1,5,'+00 11:50:00.000000','+00 17:10:00.000000');
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (6,9,4,3,'+00 08:50:00.000000','+00 12:30:00.000000');
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (7,10,4,3,'+00 07:30:00.000000','+00 11:30:00.000000');
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (8,7,3,3,'+00 08:30:00.000000','+00 13:30:00.000000');
+Insert into IS620GROUP2.TBL_ROUTE (RID,BUSID,SCHOOLID,NOOFSTOPS,ARRIVALTIME,DEPARTURETIME) values (9,8,3,3,'+00 09:30:00.000000','+00 14:30:00.000000');
+
+
+Insert into IS620GROUP2.TBL_SCHOOL (SCHOOLID,SCHOOLTYPEID,SCHOOLNAME,ADDRESS,CITY,ZIP,PHONE,STARTTIME,ENDTIME,CAPACITY) values (1,1,'Arbutus Elementary School','1300 Sulphur Spring Rd','Baltimore',21227,4432567891,'+00 08:00:00.000000','+00 11:00:00.000000',30);
+Insert into IS620GROUP2.TBL_SCHOOL (SCHOOLID,SCHOOLTYPEID,SCHOOLNAME,ADDRESS,CITY,ZIP,PHONE,STARTTIME,ENDTIME,CAPACITY) values (2,3,'UMBC','1000 Hilltop Circle','Baltimore',21250,4142653498,'+00 11:00:00.000000','+00 17:00:00.000000',50);
+Insert into IS620GROUP2.TBL_SCHOOL (SCHOOLID,SCHOOLTYPEID,SCHOOLNAME,ADDRESS,CITY,ZIP,PHONE,STARTTIME,ENDTIME,CAPACITY) values (3,2,'Catonsville Middle School','2301 Edmondson Ave','Catonsville',21228,4432516723,'+00 09:30:00.000000','+00 13:30:00.000000',40);
+Insert into IS620GROUP2.TBL_SCHOOL (SCHOOLID,SCHOOLTYPEID,SCHOOLNAME,ADDRESS,CITY,ZIP,PHONE,STARTTIME,ENDTIME,CAPACITY) values (4,2,'UHS Middle School','4805 Gateway Terrace','Arbutus',21227,4004142367,'+00 09:30:00.000000','+00 13:30:00.000000',40);
+Insert into IS620GROUP2.TBL_SCHOOL (SCHOOLID,SCHOOLTYPEID,SCHOOLNAME,ADDRESS,CITY,ZIP,PHONE,STARTTIME,ENDTIME,CAPACITY) values (5,3,'DPS High School','2400 Lansdowne Rd','Baltimore',21227,4438132745,'+00 11:00:00.000000','+00 17:00:00.000000',55);
+
+
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (1,1);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (1,5);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (1,12);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (1,13);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (1,14);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (2,2);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (3,3);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (4,4);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (5,4);
+Insert into IS620GROUP2.TBL_SCHOOL_BUS_STOP (SCHOOLID,BUSSTOPID) values (5,5);
+
+
+Insert into IS620GROUP2.TBL_SCHOOL_TYPE (ID,DESCRIPTION) values (1,'Elementary School');
+Insert into IS620GROUP2.TBL_SCHOOL_TYPE (ID,DESCRIPTION) values (2,'Middle School');
+Insert into IS620GROUP2.TBL_SCHOOL_TYPE (ID,DESCRIPTION) values (3,'High School');
+
+Insert into IS620GROUP2.TBL_STUDENT (ID,SNAME,HOUSEID,SCHOOLID,TAKESBUS) values (1,'Ankur Nagar',1,1,1);
+Insert into IS620GROUP2.TBL_STUDENT (ID,SNAME,HOUSEID,SCHOOLID,TAKESBUS) values (2,'Chaitanya Kulkarni',2,1,1);
+Insert into IS620GROUP2.TBL_STUDENT (ID,SNAME,HOUSEID,SCHOOLID,TAKESBUS) values (3,'Urmita Banerjee',3,2,1);
+Insert into IS620GROUP2.TBL_STUDENT (ID,SNAME,HOUSEID,SCHOOLID,TAKESBUS) values (4,'Pratik Tamakuwala',4,5,1);
+Insert into IS620GROUP2.TBL_STUDENT (ID,SNAME,HOUSEID,SCHOOLID,TAKESBUS) values (5,'Sushant Paygude',5,5,1);
+Insert into IS620GROUP2.TBL_STUDENT (ID,SNAME,HOUSEID,SCHOOLID,TAKESBUS) values (6,'Priyank Agarwal',6,3,1);
+Insert into IS620GROUP2.TBL_STUDENT (ID,SNAME,HOUSEID,SCHOOLID,TAKESBUS) values (7,'Swati Chakraborty',7,5,1);
+
+Insert into IS620GROUP2.TBL_USER (USERID,EMAIL,PHONE,PASSWORD,HOUSEID) values (1,'Adam@gmail.com',4431236540,'adam11',1);
+Insert into IS620GROUP2.TBL_USER (USERID,EMAIL,PHONE,PASSWORD,HOUSEID) values (2,'Sheela@gmail.com',4436541232,'shee22',2);
+Insert into IS620GROUP2.TBL_USER (USERID,EMAIL,PHONE,PASSWORD,HOUSEID) values (3,'Mitchell@gmail.com',7801456214,'mitch56',3);
+Insert into IS620GROUP2.TBL_USER (USERID,EMAIL,PHONE,PASSWORD,HOUSEID) values (4,'Mike@gmail.com',2406579874,'rachluv',5);
+Insert into IS620GROUP2.TBL_USER (USERID,EMAIL,PHONE,PASSWORD,HOUSEID) values (5,'Harvey@gmail.com',443123654,'specterrocks',5);
+Insert into IS620GROUP2.TBL_USER (USERID,EMAIL,PHONE,PASSWORD,HOUSEID) values (6,'ANKUR@gmail.com',443123653,'ANKROCK',6);
+
+
+
+
+
+
+
+
+
+----D) Features 
+
+--Features for user management:
+
+
+--1. Register a user with the system. The user needs to provide email, phone#, password, and --house ID. The procedure should check whether the email already exists in user table. 
+--    If so, please print a message saying the user exists. Otherwise create the user with a new --user ID. Please also verify whether that house ID exists. 
+
+Drop sequence user_id_seq;
+Create sequence user_id_seq start with 6; -- sequence for user ID, will be used when data is  getting inserted
+
+
+create or replace procedure sp_user_registration(in_email in varchar, in_phone in int, in_password in varchar, in_houseid in int)
+is
+cursor c1 is select count(*) as email_count from tbl_user where email = in_email; --to count email
+cursor c2 is select count(*) as house_count  from tbl_house where houseid = in_houseid; --to count houses
+begin
+	for i in c2
+    loop
+	if (i.house_count > 0) then --check if house exist
+		for j in c1
+            loop
+		if (j.email_count = 0) then --check if email exist
+			 DBMS_OUTPUT.PUT_LINE('Can be inserted.');
+                    insert into tbl_user values(user_id_seq.nextval,in_email,in_phone,in_password, in_houseid);
+
+		else
+			DBMS_OUTPUT.PUT_LINE('Email exist!'); --notify if email exist
+		end if;
+            end loop;
+		else
+			DBMS_OUTPUT.PUT_LINE('No house id!');
+		end if;
+    end loop;
+end;
+
+
+--2. Allow a user to login by providing email and password. Please check whether email exists --and password matches. If not, please print a message to indicate the error. 
+--Otherwise print a message to indicate user has logged on. The procedure should return a --value 1 for success login and 0 for unsuccessful log in. 
+
+create or replace function fn_user_login(in_email in varchar, in_password in varchar)
+return number is
+
+--cursor to check for email and password
+cursor c1 is select count(email) as email_count, password from tbl_user where email = in_email
+			group by password;
+begin
+	for i in c1
+	loop
+		if (i.email_count <> 0) then -- check if email exists
+			if (i.password = in_password) then -- check if password matches
+                DBMS_OUTPUT.PUT_LINE('User logged in successfully!');
+                return 1;
+            else
+                DBMS_OUTPUT.PUT_LINE('Email id or password incorrect!');
+                return 0;
+            end if;
+		end if;
+	end loop;
+    DBMS_OUTPUT.PUT_LINE('Email id does not exist!');
+    return 0;
+end;
+ 
+
+
+
+--3. Allow a user to read messages providing user id and a starting date. Print out messages for --that user since that date. 
+
+create or replace procedure sp_user_read_message(u_id in int, msg_date in date )
+IS
+
+msg_body tbl_message.mbody%type;
+
+
+cursor c1 is select mbody                   --Defined Cursor c1 to read message from tbl_message table given user id and date of message
+from tbl_message
+where USERID=u_id and trunc(messagetime) >= msg_date;
+
+begin
+
+    open c1;
+        loop
+            fetch c1 into  msg_body;
+            exit when c1%NOTFOUND;
+                Dbms_output.put_line( msg_body);
+        end loop;
+    close c1;
+
+
+--exception handling
+Exception
+	when no_data_found then
+	  Dbms_output.put_line('no rows found');
+    when too_many_rows then
+	  dbms_output.put_line('too many rows');
+end;
+
+
+--Features related to routes
+
+--4. Given a home address, look up the address of the bus stop associated with that house, and --information about bus routes containing that stop. 
+--    For each route, print school name, bus ID, morning and afternoon stop time. 
+
+
+create or replace procedure sp_route_lookup(street_address in varchar2)
+is
+
+bus_address TBL_BUS_STOP.address%type;
+route_id tbl_bus_stop.routeid%type;
+school_name TBL_SCHOOL.SCHOOLNAME%type;
+busstop_id TBL_BUS_STOP.BUSSTOPID%type;
+morningstop_time TBL_BUS_STOP.MSTOPTIME%type;
+afternoonstop_time TBL_BUS_STOP.ASTOPTIME%type;
+
+-- cursor to retrieve school name, busid, morning stop time and afternoon stop time
+cursor c2 is select s.schoolname, r.busid, bs.mstoptime, bs.astoptime 
+from tbl_route r, tbl_school s, tbl_house tbh, tbl_bus_stop bs
+where tbh.STREETADDRESS= street_address and tbh.BUSSTOPID=bs.BUSSTOPID and bs.routeid= r.rid and r.SCHOOLID=s.SCHOOLID;
+
+
+Begin
+
+--implicit cursor to look for bus address and Route ID, also to check for house address condition
+select address, routeid into bus_address, route_id
+from tbl_bus_stop tbs, tbl_house tbh
+where tbh.STREETADDRESS= street_address and tbh.BUSSTOPID=tbs.BUSSTOPID;
+Dbms_output.put_line('Bus Address is: '||' '||bus_address ||' '||'and'||' '||'Route ID is: '||' ' ||route_id);
+
+--if loop if house address found then only open cursor c2
+if sql%found then
+
+open c2;
+    loop
+     fetch c2 into  school_name, busstop_id, morningstop_time, afternoonstop_time;
+     exit when c2%NOTFOUND; 
+
+    end loop;
+ close c2;
+
+
+     Dbms_output.put_line('For Route ID: '||' ' ||route_id);
+
+     Dbms_output.put_line('School Name: '||' '||school_name ||' , '||'Bus ID:'||' '||busstop_id||' , '
+     ||'Morning Stop time:'||' '||morningstop_time||' , '||'Afternoon Stop time:'||' '||afternoonstop_time); 
+
+end if; 
+
+--exception handling if no house address found then will print 'no rows found'
+Exception
+	when no_data_found then
+	  Dbms_output.put_line('no rows found');
+    when too_many_rows then
+	  dbms_output.put_line('too many rows');
+
+end;
+
+
+
+
+--5. Given a route ID, displays the bus ID, the name of the company that owns the bus, and --phone# of the company, time arriving at school in the morning and time departure from school --in the afternoon. Please print out all stops on the route. Ordering them in the order of --sequence number in the morning and afternoon. For each stop, print out the stop address and --stop time in the morning and afternoon. Please handle the case when the route ID is not valid.
+
+create or replace procedure sp_route_stops(in_route_id in number)
+is 
+
+-- cursor to find for bus stop description, bus address, morning stop time  and afternoon stop time
+cursor c1 is select description, address, mstoptime, astoptime from TBL_BUS_STOP
+where ROUTEID = in_route_id
+order by MSEQNO, ASEQNO asc; 
+
+v_bid tbl_bus.bid%type;
+v_cname tbl_bus_company.cname%type;
+v_phone tbl_bus_company.phone%type;
+v_arrivaltime tbl_route.arrivaltime%type;
+v_departuretime tbl_route.departuretime%type;
+stop_address TBL_BUS_STOP.ADDRESS%type;
+stop_description TBL_BUS_STOP.DESCRIPTION%type;
+m_stoptime TBL_BUS_STOP.MSTOPTIME%type;
+a_stoptime TBL_BUS_STOP.ASTOPTIME%type;
+
+
+begin
+
+--implict cursor to get bus id, company name, phone number, Arrival time, departure time 
+
+            select b.bid, bc.cname, bc.phone, r.arrivaltime, r.departuretime into v_bid, v_cname, v_phone, v_arrivaltime, v_departuretime
+            from tbl_bus b, tbl_route r, tbl_bus_company bc
+            where b.companyid = bc.cid and r.busid = b.BID and r.rid = in_route_id;
+
+            DBMS_OUTPUT.PUT_LINE('Bus id: ' || v_bid || ' Bus company: ' || v_cname || ' Company Number: ' || v_phone || ' Arrival Time: ' || v_arrivaltime || ' Departure Time: ' || v_departuretime);
+
+
+        open c1;
+            loop
+                fetch c1 into  stop_description, stop_address, m_stoptime, a_stoptime;
+                exit when c1%NOTFOUND; 
+
+                DBMS_OUTPUT.PUT_LINE('Bus Stop on routed id: ' || in_route_id || ' is ' || stop_description|| ', Address: ' || stop_address || ', Morning Stop time: ' || m_stoptime|| ', Afternoon Stop time ' || a_stoptime);
+            end loop;
+
+        close c1;
+
+ -- exception handling if no route found
+ Exception
+     when no_data_found then
+     DBMS_OUTPUT.PUT_LINE('No such route!!');
+
+end;
+
+
+
+--6. Given a student ID, compute the time spent on bus in the morning and afternoon. This can --be computed by time to arrive at school minus stop time at the bus stop in the morning and --time to stop at bus stop minus departure time in the afternoon.
+
+create or replace procedure SP_STUDENT_BUS_TIME (student_id int)
+as
+m_time int;
+a_time int;
+tot_time int; 
+
+begin
+
+-- implicit cursor to extract morning time and afternoon time spent by student on a bus 
+select (extract(hour from r.arrivaltime)*60) +(extract(minute from r.arrivaltime)) - 
+(extract(hour from b.mstoptime)*60) +(extract(minute from b.mstoptime)), 
+(extract(hour from b.astoptime)*60) +(extract(minute from b.astoptime)) - 
+(extract(hour from r.departuretime)*60) +(extract(minute from r.departuretime))
+into m_time,a_time
+from tbl_student s, tbl_house h, tbl_route r, tbl_bus_stop b
+where
+s.houseid=h.houseid and 
+h.busstopid=b.busstopid and
+r.rid=b.routeid and
+s.id=student_id;
+
+-- calculate total time from morning and afternoon time
+tot_time:=m_time+a_time;
+
+-- display results
+dbms_output.put_line('Morning time: ' || m_time || ' Minutes');
+dbms_output.put_line('Afternoon time: '  ||  a_time || ' Minutes');
+dbms_output.put_line('Total time: '  ||  tot_time || ' Minutes');
+
+-- handling the case when the student id is not present
+exception 
+   when no_data_found then
+   dbms_output.put_line('Student ID not found');
+end;
+
+
+
+--7. Given a student ID, find other students taking the same bus route at the same stop with the --student. Display the names of these students.
+
+create or replace procedure sp_route_student_samebus(studentid in integer)
+is
+
+-- cursor finds the names of students using the same route and same bus stop as the input student
+cursor c1 is select s2.sname from tbl_student s1 join tbl_student s2 on s1.schoolid=s2.schoolid 
+join tbl_house h1 on s1.HouseId=h1.HouseId 
+join tbl_house h2 on s2.HouseId=h2.HouseId 
+join tbl_bus_stop bs on bs.BUSSTOPID=h1.BUSSTOPID and bs.busstopid=h2.BUSSTOPID
+join tbl_route r on bs.ROUTEID=r.RID
+where s1.id=studentid and s2.id<>studentid;
+
+otherstudents varchar(70);
+student_id int;
+
+Begin
+
+select id into student_id from tbl_student where id=studentid;
+
+if sql%found then
+
+open c1;
+    loop
+     fetch c1 into otherstudents;
+     exit when c1%NOTFOUND; 
+
+    Dbms_output.put_line('Other students are: '||' '||otherstudents);     
+
+    end loop;
+
+ close c1;
+
+end if;
+
+-- exception for cases when student id is invalid
+Exception
+	when no_data_found then
+	  Dbms_output.put_line('Invalid Student ID');
+    when too_many_rows then
+	  dbms_output.put_line('too many rows');
+
+end;
+
+
+
+--Features related to driver
+
+--8. Given a bus route ID, print out the number of students taking that bus route at each stop --(order them by morning sequence number) as well as total number of students taking that bus --route. Please also print out morning sequence number and stop address for each stop
+
+create or replace procedure sp_driver_student_count(in_route_id in int)
+is
+cursor c1 is select count(s.id) as StudentCount,bs.busstopid,bs.mseqno,bs.address from TBL_Student s, TBL_HOUSE h, TBL_BUS_STOP bs, tbl_route r
+    where r.rid = in_route_id and r.rid = bs.routeid and bs.busstopid = h.busstopid and h.houseid = s.houseid
+    group by bs.busstopid, bs.mseqno, bs.address
+    order by bs.mseqno; --cursor to get student count on bus stop of given route
+
+    v_stud_count int;
+    v_busstop TBL_BUS_STOP.BUSSTOPID%type;
+    v_total_count int;
+
+begin
+
+    select count(*) into v_total_count from TBL_Student s, TBL_HOUSE h, TBL_BUS_STOP bs, tbl_route r --to count students taking specific route
+    where r.rid = in_route_id and r.rid = bs.routeid and bs.busstopid = h.busstopid and h.houseid = s.houseid;
+
+    if v_total_count > 0 then
+        DBMS_OUTPUT.PUT_LINE(v_total_count || ' students take route ' || in_route_id);
+    else
+        DBMS_OUTPUT.PUT_LINE('No such route!');
+    end if;
+
+	for i in c1
+        loop
+            DBMS_OUTPUT.PUT_LINE('No of students taking bus stop ' || i.busstopid || ' is ' || i.StudentCount
+            || ' ,Morning sequence no is ' || i.mseqno || ' and ' || 'stop address is ' || i.address);
+        end loop;
+
+end;
+
+.
+
+
+--9. Given a driver ID, print out the work schedule of the driver, including the bus routes the --driver drives in the morning and afternoon, in the order of start time. For each route, list route --ID, school name, the time at first stop in the morning and time arriving at school, as well as --time departing the school and time at the last stop in the afternoon.
+
+create or replace PROCEDURE sp_driver_schedule(driver_idvar in int)
+IS
+
+driver_name tbl_driver.dname%type;
+route_id TBL_BUS_STOP.ROUTEID%type;
+school_name tbl_school.schoolname%type;
+first_morning_stop_time TBL_BUS_STOP.MSTOPTIME%type;
+school_arrival_time tbl_route.arrivaltime%type;
+last_afternoon_stop_time TBL_BUS_STOP.ASTOPTIME%type;
+school_departure_time TBL_ROUTE.DEPARTURETIME%type;
+drid integer;
+
+--cursor calculates the routes a driver drives along with the required information to be shown for each route like morning first stop time,arrivaltime,departuretime,afternoon last stop time and school name
+cursor c1 is select d.dname,r.rid,s.SCHOOLNAME,min(bs.MSTOPTIME)as mornstop,r.ARRIVALTIME,r.DEPARTURETIME,max(bs.ASTOPTIME)as afterstop
+from tbl_driver d join tbl_bus b on d.Id=b.DriverId
+join tbl_route r on r.busid=b.bid
+join tbl_school s on s.SCHOOLID=r.SCHOOLID
+join tbl_bus_stop bs on bs.ROUTEID=r.RID
+where d.ID=driver_idvar
+group by d.dname,r.rid,s.SCHOOLNAME,r.ARRIVALTIME,r.DEPARTURETIME;
+
+Begin
+
+select Id into drid from tbl_driver where Id=driver_idvar;
+
+if sql%found then
+
+open c1;
+    loop
+Fetch c1 into driver_name,route_id,school_name,first_morning_stop_time,school_arrival_time,school_departure_time,last_afternoon_stop_time;
+     exit when c1%NOTFOUND; 
+    Dbms_output.put_line('Driver: '||' '||driver_name||' '||'drives route : '||route_id||' '||'having morning first stop time'||' '||first_morning_stop_time||' '||',school arrival time'||' '||school_arrival_time||' '||', school departure time'||' '||school_departure_time||' '||', afternoon last stop time'||' '||last_afternoon_stop_time||' '||'for school'||' '||school_name);
+    end loop;
+
+ close c1;
+
+ end if;
+
+--exception to handle invalid driver id case
+Exception
+	when no_data_found then
+	  Dbms_output.put_line('Invalid Driver ID');
+    when too_many_rows then
+	  dbms_output.put_line('too many rows');
+
+end;
+
+
+
+--10. Given a driver ID, compute average gap time. Each bus driver normally drives multiple 
+-- routes morning and afternoon. Gap time is defined as the gap between two routes the driver 
+-- drives consecutively. 
+--For example, suppose in the morning driver 1 drives route 3, 2, and 1, and in the afternoon he --drives route 3, 2, 1 as well. Suppose on route 3 he arrives at school at 7 am, and the stop time --of the first stop on route 2 is --7:38 am, on route 2 he arrives at school at 7:50 am and the stop --time of the first stop on route 1 is 8:25 am. The gap between route 3 and 2 is 38 minutes. The --gap between route 2 and 1 is 35 minutes. The gap for --afternoon routes can be computed --similarly (but between last stop time of the current route and the departure time of next route). --Suppose the gap time for afternoon routes is 20 minutes and 20 minutes. The average gap --time is thus (38+35+20+20)/4. You don t need to compute the gap between the first route in --the afternoon and the last route in the morning. 
+
+create or replace procedure sp_driver_avg_gap_time(in_driver in int)
+is
+cursor c1 is --this cursor will compute the gap time for a given driver id. We have used self join to compute the time with next consecutive route
+select b.rid,b1.rid,b.arr,b1.mstop,b1.dep,b.astop, (b1.mstop-b.arr),(b1.dep-b.astop) from 
+(select d.id as did,r.ARRIVALTIME as arr,r.DEPARTURETIME as dep,bs.BUSSTOPID as stopid,bs.ROUTEID as rid,bs.MSEQNO,bs.MSTOPTIME as mstop,
+bs.ASEQNO,bs.ASTOPTIME as astop
+from tbl_driver d join tbl_bus b on d.Id=b.DriverId
+join tbl_route r on r.busid=b.bid join tbl_bus_stop bs on bs.ROUTEID=r.RID
+where d.id=in_driver and bs.mseqno=1 order by r.ARRIVALTIME) b 
+join 
+(select d.id as did,r.ARRIVALTIME as arr,r.DEPARTURETIME as dep,bs.BUSSTOPID as stopid,bs.ROUTEID as rid,bs.MSEQNO,bs.MSTOPTIME as mstop,
+bs.ASEQNO,bs.ASTOPTIME as astop
+from tbl_driver d join tbl_bus b on d.Id=b.DriverId
+join tbl_route r on r.busid=b.bid join tbl_bus_stop bs on bs.ROUTEID=r.RID
+where d.id=in_driver and bs.mseqno=1 order by r.ARRIVALTIME) b1 
+on b.rid<>b1.rid and b.arr<b1.mstop
+order by (b1.mstop-b.arr),(b1.dep-b.astop);
+
+v_count_stops int;
+v_count_flag int :=0;
+gap_morn INTERVAL DAY TO SECOND;
+gap_after INTERVAL DAY TO SECOND;
+oneroute int;
+secondroute int;
+arrivaltime_var INTERVAL DAY TO SECOND;
+departuretime_var INTERVAL DAY TO SECOND;
+mornstoptime INTERVAL DAY TO SECOND;
+afterstoptime INTERVAL DAY TO SECOND;
+v_total_gap_morn int :=0;
+v_total_gap_aftn int :=0;
+v_total_stops int :=0;
+v_gap_time int :=0;
+
+begin
+
+    select count(r.rid) into v_count_stops from tbl_driver d join tbl_bus b on d.Id=b.DriverId --get count for routes a driver drives
+    join tbl_route r on r.busid=b.bid where d.ID = in_driver;
+    
+    if v_count_stops = 0 then
+        Dbms_output.put_line('Invalid driver id');
+    
+    else
+
+
+open c1;
+    loop
+     fetch c1 into oneroute,secondroute,arrivaltime_var,mornstoptime,departuretime_var,afterstoptime,gap_morn,gap_after;
+     exit when c1%NOTFOUND or v_count_flag=v_count_stops-1; 
+     v_count_flag:=v_count_flag + 1;
+     --Dbms_output.put_line(v_count_flag);
+
+     v_total_gap_morn := v_total_gap_morn + (extract(hour from gap_morn)*60) + extract(minute from gap_morn); --compute the morning gap time in minutes
+     v_total_gap_aftn := v_total_gap_aftn + (extract(hour from gap_after)*60) + extract(minute from gap_after); --compute the afternoon gaptime in minutes
+
+    end loop;
+ close c1;
+
+    v_total_stops := (v_count_stops - 1)*2; --count for total stops to be divided
+    --Dbms_output.put_line(v_total_stops);
+
+    v_gap_time :=(v_total_gap_morn + v_total_gap_aftn)/v_total_stops; --formula to compute the average
+
+    Dbms_output.put_line('Average gap time for driver id ' || in_driver || ' is ' ||  v_gap_time || 'mins');
+
+    end if;
+
+end;
+
+
+
+
+--Features related to messages:
+
+--11. Generate an alert for temporary change of arrival time of a bus. Input includes route ID and --a short text description (e.g., "is 5 minute late" or "due to early dismissal the bus will arrive at --noon"). For every user registered --      with a house ID on that bus route (linked to a bus stop --on that route), insert a message into message table with the current time, registered user's ID, --and content including the input text description and bus ID (e.g., bus X is 5 minute late where --X is bus ID). Please handle the case when the route ID is invalid.
+
+--sequence to insert records in the message table
+--since messageID is primary key it needs to be auto-generated 
+Drop sequence message_seq;
+create sequence message_seq start with 1;
+
+create or replace procedure SP_user_message (r_id int, text varchar)
+as
+-- explicit cursor to retrieve all users to whom message is to be sent
+cursor c1 is select u.userid from
+tbl_route r, tbl_school s, tbl_student st, tbl_house h, tbl_user u
+where r.schoolid=s.schoolid and s.schoolid=st.schoolid and 
+st.houseid=h.houseid and h.houseid=u.houseid and
+r.rid=r_id;
+user_id tbl_user.userid%type;
+bus_id tbl_route.busid%type;
+message tbl_message.mbody%type;
+
+begin
+
+-- Implicit cursor to retrieve bus id for the given route id
+select busid into bus_id from tbl_route where rid=r_id;
+open c1;
+loop
+fetch c1 into user_id;
+ exit when c1%notfound;
+dbms_output.put_line(user_id);
+
+-- form the message
+message:='bus '||bus_id||' '||text;
+
+-- insert into tbl_message using sequence: massage_seq, user ids and message
+insert into tbl_message values (message_seq.nextval,user_id,current_timestamp,message);
+commit;
+end loop;
+close c1;
+
+-- handle the case when route id is not valid
+exception
+ when no_data_found then
+ dbms_output.put_line('Invalid route ID');
+end;
+
+
+
+--12. Change the bus assigned to a route. Input includes route ID, new bus ID. Update the --appropriate table to reflect that. For every user registered with a house ID on that bus route, --insert a message into message table   with the current time, registered user's ID, and content --saying 'Bus X for route Y to Z school has been changed to bus W' where X is old bus ID, Y is --route ID, Z is the name of school, W is new bus ID. Please handle   the case when the route ID --is invalid.
+
+create or replace procedure sp_messages_bus_assgined(in_route in int, in_busid in int)
+is
+cursor c1 is select r.BUSID,r.RID,s.schoolname,h.houseid,u.userid from tbl_route r, TBL_SCHOOL s, TBL_BUS_STOP bs, TBL_HOUSE h, TBL_USER u
+where r.rid = in_route 
+    and r.schoolID = s.schoolID
+    and r.rid = bs.routeid
+    and bs.busstopid = h.BUSSTOPID
+    and h.houseid = u.houseid; 
+--declare
+    v_old_busid int;
+    v_message varchar(200);
+begin
+
+    select busid into v_old_busid from tbl_route where rid = in_route;      
+    update tbl_route set BUSID = in_busid where RID = in_route;
+
+    for i in c1
+    loop
+        v_message := 'Bus ' || v_old_busid || ' for route ' || i.rid || ' to ' || 'school ' || i.schoolname || ' has been changed to bus ' || in_busid; 
+        insert into TBL_MEssage values (message_seq.NEXTVAL,i.userid,localtimestamp,v_message);
+    end loop;
+
+      Exception
+        when no_data_found then
+             DBMS_OUTPUT.PUT_LINE('No such route!!');
+
+end;
+
+
+
+--Statistical features:
+
+--13. Given a school ID, displays number of bus routes serving that school, number of students taking each route, and total number of students taking buses.
+
+create or replace procedure SP_route_count_school (school_id in int)
+as
+-- explicit cursor to retrieve all the routes serving a given school
+cursor c1 is select r.rid from tbl_route r, tbl_school s where s.schoolid=r.schoolid and s.schoolid=school_id;
+no_of_routes int;
+no_of_students int;
+route_id int;
+no_of_st_r int;
+sid int;
+
+begin
+-- implicit cursor to check invalid schoolid
+select schoolid into sid from tbl_school where schoolid=school_id;
+
+-- query to retrieve number of routes for a given schoolid
+select count(r.rid)into no_of_routes from tbl_route r, tbl_school s where r.schoolid=s.schoolid and s.schoolid=school_id;
+
+-- query to retrieve number of students taking bus
+select count(s.id) into no_of_students from tbl_student s, tbl_school sc where
+s.schoolid=sc.schoolid and s.takesbus=1 and sc.schoolid=school_id;
+
+-- display results
+dbms_output.put_line('NO of routes for school id ' || school_id || ' is: ' || no_of_routes);
+dbms_output.put_line('NO of students taking bus for school id ' || school_id || ' is: ' || no_of_students);
+open c1;
+loop
+ fetch c1 into route_id;
+  exit when c1%notfound;
+
+  -- retrieve number of studnets taking bus in each route for a school id
+ select count(s.id) into no_of_st_r from tbl_student s, tbl_house h, tbl_bus_stop b, tbl_route r where
+ s.HOUSEID=h.HOUSEID and h.BUSSTOPID=b.BUSSTOPID and b.ROUTEID=r.rid and  s.takesbus=1 and r.rid=route_id;
+ dbms_output.put_line('NO of student in route ' || route_id || ' is : ' || no_of_st_r);
+end loop;
+close c1;
+
+-- handle the case when schoolid is not valid
+ exception
+ when no_data_found then
+ dbms_output.put_line('Invalid School ID');
+end;
+
+
+
+
+--14. Compute utilization rate of each bus route. This is computed by summing up number of --students taking that bus route divided by capacity of the bus. Please also compute an average --utilization rate over all routes.
+
+
+create or replace procedure sp_utilization_rate(avg_util_rate out real)
+is
+
+--cursor c1 computes the utilization rate per route
+cursor c1 is select a.student_count/b.capacity ,a.rid
+from (select count(s.Id) as student_count,r.RID,r.busid 
+from tbl_student s join tbl_route r on s.schoolid=r.schoolid 
+group by r.rid,r.busid) a join tbl_bus b on a.busid=b.bid;
+
+utilization_rate real;
+route_num integer;
+
+Begin
+
+--implicit cursor to calculate the average utilization rate over all the routes
+select sum(c.util_rate)/count(c.route) into avg_util_rate
+from (select a.student_count/b.capacity as util_rate,a.rid as route 
+from (select count(s.Id) as student_count,r.RID,r.busid 
+from tbl_student s join tbl_route r on s.schoolid=r.schoolid 
+group by r.rid,r.busid) a join tbl_bus b on a.busid=b.bid) c ;
+
+if sql%found then
+
+open c1;
+    loop
+     fetch c1 into utilization_rate,route_num;
+     exit when c1%NOTFOUND; 
+Dbms_output.put_line('Utilization Rate is: '||' '||utilization_rate ||' '||'for'||' '||'Route Number: '||' ' ||route_num);     
+
+    end loop;
+
+ close c1;
+
+    --Dbms_output.put_line('Utilization Rate is: '||' '||utilization_rate ||' '||'for'||' '||'Route Number: '||' ' ||route_num);
+
+end if; 
+
+--exception to handle a case of no data
+Exception
+	when no_data_found then
+	  Dbms_output.put_line('no rows found');
+    when too_many_rows then
+	  dbms_output.put_line('too many rows');
+
+end;
+
+
+
+
+
+--15. Print out total number of schools, total number of buses, total number of bus routes, and  --total number of students taking buses, and the k routes with the highest number of stops, k --routes with the highest number of students, and k routes with the lowest number of students. K --is an input parameter.
+
+set SERVEROUTPUT on;
+create or replace procedure sp_satistical_count(in_n in int)
+is
+cursor c1 is
+    select count_busstopid,routeid from(
+    select count(busstopid ) as count_busstopid,routeid from TBL_BUS_STOP
+    group by routeid
+    order by 1 desc) a
+    where rownum <= in_n;
+  
+cursor c2 is    
+    select highstudent,rid from(
+    select count(s.ID) as highstudent, r.rid from tbl_student s, tbl_route r
+    where s.SCHOOLID = r.SCHOOLID 
+    group by r.RID
+    order by 1 desc) a
+    where rownum <= in_n;
+
+cursor c3 is    
+    select loweststudent,rid from(
+    select count(s.ID) as loweststudent, r.rid from tbl_student s, tbl_route r
+    where s.SCHOOLID = r.SCHOOLID 
+    group by r.RID
+    order by 1 asc) b
+    where rownum <= in_n;
+
+
+v_count_school int;
+v_count_bus int;
+v_count_route int;
+v_count_student int;
+/*v_count_highest_route_student int;
+v_route int;
+v_count_highest_student int;
+v_route1 int;
+v_count_lowest_student int;
+v_route2 int;*/
+
+begin
+    select count(*) into v_count_school from tbl_school;
+    select count(*) into v_count_bus from tbl_bus;
+    select count(*) into v_count_route from tbl_route;
+    select count(*) into v_count_student from tbl_student where takesbus = 1;
+    
+    
+    DBMS_OUTPUT.PUT_LINE('Total no of schools:' || v_count_school);
+    DBMS_OUTPUT.PUT_LINE('Total no of bus:' || v_count_bus);
+    DBMS_OUTPUT.PUT_LINE('Total no of bus routes:' || v_count_route);
+    DBMS_OUTPUT.PUT_LINE('Total no of students taking bus:' || v_count_student);
+    
+    DBMS_OUTPUT.PUT_LINE(in_n || ' routes ' || ' with highest no of stops');
+    for i in c1
+    loop
+        DBMS_OUTPUT.PUT_LINE('Route id: ' || i.routeid || ' Stops:' || i.count_busstopid);
+    end loop;
+    
+    DBMS_OUTPUT.PUT_LINE(in_n || ' routes ' || ' with highest no of students');
+    for i in c2
+    loop
+        DBMS_OUTPUT.PUT_LINE('Route id: ' || i.rid || ' Students:' || i.highstudent);
+    end loop;
+    
+    DBMS_OUTPUT.PUT_LINE(in_n || ' routes ' || ' with lowest no of students:');
+    for i in c3
+    loop
+        DBMS_OUTPUT.PUT_LINE('Route id:' || i.rid || ' Students:' || i.loweststudent);
+    end loop;
+    
+    Exception
+        when no_data_found then
+                DBMS_OUTPUT.PUT_LINE('No data found!!');
+end;
+
+
+
+
+
+-- E) Demo Script
+
+--Feature 1
+
+--CASE 1
+
+Set serveroutput on;
+exec sp_user_registration('Harvey@gmail.com',443123654,'specterrocks',5);
+
+Select * from tbl_user;
+
+--Output:
+--Email exist!
+
+--CASE 2
+
+Set serveroutput on;
+exec sp_user_registration('Harvey@gmail.com',443123654,'specterrocks',8);
+
+Select * from tbl_user;
+
+--OUTPUT:
+--No house id!
+
+--CASE 3
+
+Set serveroutput on;
+exec sp_user_registration('ANKUR@gmail.com',443123653,'ANKROCK',6);
+
+Select * from tbl_user;
+
+--OUTPUT:
+--Can be inserted.
+
+
+--FEATURE 2
+
+--CASE 1
+
+declare
+v_out number;
+begin
+v_out := fn_user_login('anksdn@gmail.com','asda');
+end;
+
+Select * from tbl_user;
+
+
+--OUTPUT:
+--Email id does not exist!
+
+
+--CASE2
+
+declare
+v_out number;
+begin
+v_out := fn_user_login('Adam@gmail.com','asda');
+end;
+
+Select * from tbl_user;
+
+--OUTPUT:
+--Email id or password incorrect!
+
+--CASE 3
+
+declare
+v_out number;
+begin
+v_out := fn_user_login('Adam@gmail.com','adam11');
+end;
+
+--OUTPUT:
+--User logged in successfully!
+
+
+--FEATURE 3
+Set serveroutput on;
+exec sp_user_read_message(5, date '2018-05-16');
+
+Select * from tbl_message where userid=5;
+
+--Output:
+--bus 1 Bus is late
+--bus 1 Bus is late
+--bus 1 Bus is late
+--bus 1 Bus is late
+--bus 1 is delayed
+
+--FEATURE 4
+
+--CASE 1
+Set serveroutput on;
+exec sp_route_lookup('47h81 Gateway Terrace');
+
+--OUTPUT
+--no rows found
+
+
+--CASE 2
+Set serveroutput on;
+exec sp_route_lookup('4781 Gateway Terrace');
+
+--OUTPUT
+--Bus Address is:  Arbutus and Route ID is:  1
+--For Route ID:  1
+--School Name:  DPS High School , Bus ID: 1 , Morning Stop time: +00 07:00:00.000000 , --Afternoon Stop time: +00 11:25:00.000000
+
+--FEATURE 5
+
+--CASE 1
+Set serveroutput on;
+exec sp_route_stops(10);
+
+--OUTPUT
+--No such route!!
+
+
+--CASE 2
+Set serveroutput on;
+exec sp_route_stops(1);
+
+--OUTPUT:
+--Bus id: 1 Bus company: AA Affordable Transportation Company Number: 4109459003 Arrival --Time: +00 07:50:00.000000 Departure Time: +00 11:10:00.000000
+--Bus Stop on routed id: 1 is Arbutus Stop, Address: Arbutus, Morning Stop time: +00 --07:00:00.000000, Afternoon Stop time +00 11:25:00.000000
+--Bus Stop on routed id: 1 is Maiden Choice Stop, Address: Arbutus, Morning Stop time: +00 --07:10:00.000000, Afternoon Stop time +00 11:20:00.000000
+--Bus Stop on routed id: 1 is UMBC Admin Stop, Address: Halethorpe, Morning Stop time: +00 --07:20:00.000000, Afternoon Stop time +00 11:15:00.000000
+
+-- FEATURE 6
+ 
+exec sp_student_bus_time(1);
+	--output
+	   -- Morning time: 50 Minutes
+               -- Afternoon time: 35 Minutes
+               -- Total time: 85 Minutes
+
+exec sp_student_bus_time(25);
+   -- output 
+      -- Student ID not found
+
+-- FEATURE 7
+
+--CASE 1
+set serveroutput on;
+exec sp_route_student_samebus(1);
+
+
+--OUTPUT
+--Other students are:  Chaitanya Kulkarni
+
+
+--CASE 2
+set serveroutput on;
+exec sp_route_student_samebus(7);
+
+
+--OUTPUT
+--Other students are:  Pratik Tamakuwala
+
+
+--CASE 3
+set serveroutput on;
+exec sp_route_student_samebus(10);
+
+
+--OUTPUT
+--Invalid Student ID
+
+
+-- FEATURE 8
+
+--CASE 1
+Set serveroutput on;
+exec sp_driver_student_count(10);
+
+SELECT * FROM TBL_ROUTE;
+
+--OUTPUT:
+--No such route!
+
+--CASE 2
+Set serveroutput on;
+exec sp_driver_student_count(1);
+
+--OUTPUT:
+--3 students take route 1
+--No of students taking bus stop 1 is 2 ,Morning sequence no is 1 and stop address is Arbutus
+--No of students taking bus stop 3 is 1 ,Morning sequence no is 3 and stop address is --Halethorpe
+
+
+-- FEATURE 9
+
+--CASE 1
+set SERVEROUTPUT ON;
+exec SP_DRIVER_SCHEDULE(1);
+
+
+--OUTPUT
+--Driver:  Joe Milano drives route : 8 having morning first stop time +00 08:00:00.000000 ,school --arrival time +00 08:30:00.000000 , school departure time +00 13:30:00.000000 , afternoon last --stop time +00 14:00:00.000000 for school Catonsville Middle School
+--Driver:  Joe Milano drives route : 9 having morning first stop time +00 09:00:00.000000 ,school --arrival time +00 09:30:00.000000 , school departure time +00 14:30:00.000000 , afternoon last --stop time +00 15:40:00.000000 for school Catonsville Middle School
+--Driver:  Joe Milano drives route : 1 having morning first stop time +00 07:00:00.000000 ,school --arrival time +00 07:50:00.000000 , school departure time +00 11:10:00.000000 , afternoon last --stop time +00 11:25:00.000000 for school DPS High School
+
+
+--CASE 2
+set SERVEROUTPUT ON;
+exec SP_DRIVER_SCHEDULE(6);
+
+
+--OUTPUT
+--Driver:  Arthur Doyle drives route : 7 having morning first stop time +00 07:00:00.000000 --,school arrival time +00 07:30:00.000000 , school departure time +00 11:30:00.000000 , --afternoon last --stop time +00 12:15:00.000000 for school UHS Middle School
+--Driver:  Arthur Doyle drives route : 6 having morning first stop time +00 08:00:00.000000 --,school arrival time +00 08:50:00.000000 , school departure time +00 12:30:00.000000 , --afternoon last stop time +00 13:30:00.000000 for school UHS Middle School
+--Driver:  Arthur Doyle drives route : 4 having morning first stop time +00 09:05:00.000000 --,school arrival time +00 09:20:00.000000 , school departure time +00 13:40:00.000000 , --afternoon last stop time +00 14:30:00.000000 for school Arbutus Elementary School
+
+
+--CASE 3
+set SERVEROUTPUT ON;
+exec SP_DRIVER_SCHEDULE(7);
+
+
+--OUTPUT
+--Invalid Driver ID
+
+
+
+-- FEATURE 10
+
+set serveroutput on;
+exec sp_driver_avg_gap_time(1);
+
+--output
+
+--Average gap time for driver id 1 is 49mins
+
+set serveroutput on;
+exec sp_driver_avg_gap_time(13);
+
+--output
+--Invalid driver id
+
+
+-- FEATURE 11
+
+exec sp_user_message(1,’is late’);
+
+Select * from tbl_message;
+
+	--output
+	  --MID	 UserID  MessageTime		    	  Message
+              -- 6	4	20-MAY-18 07.06.48.597000000 PM	  bus 1 is delayed
+    	  -- 7	5	20-MAY-18 07.06.48.628000000 PM	  bus 1 is delayed
+
+
+
+
+-- FEATURE 12
+
+exec SP_ROUTE_CHANGE_ALERT(1,4);
+
+Select * from tbl_message;
+
+	--output
+	  --MID	 UserID  MessageTime		    	  Message
+  -- 9	2	20-MAY-18 09.41.37.926000000 PM	Bus 1 for route 1 to school DPS High -- School has been changed to bus 4
+--  10	3	20-MAY-18 09.41.37.926000000 PM	Bus 1 for route 1 to school DPS High -- School has been changed to bus 4
+
+
+exec SP_ROUTE_CHANGE_ALERT(25,4);
+
+	--output
+             --No such route!!
+
+
+-- FEATURE 13
+
+exec sp_route_count_school(1); 
+
+	-- output
+            -- No of routes for school id 1 is: 2
+-- No of student in route 4 is : 0
+-- No of student in route 5 is : 2
+-- No of students taking bus for school id 1 is: 2
+
+exec sp_route_count_school(11);
+
+	-- Output
+	--Invalid School ID
+
+
+-- FEATURE 14
+
+--CASE 1
+set SERVEROUTPUT on;
+declare
+avgutilrate real;
+begin
+sp_utilization_rate(avgutilrate);
+Dbms_output.put_line('Average Utilization Rate over all routes is: '||' '||avgutilrate); 
+end;
+
+
+--OUTPUT
+--Utilization Rate is:  .12 for Route Number:  1
+--Utilization Rate is:  .0285714285714285714285714285714285714286 for Route Number:  3
+--Utilization Rate is:  .08 for Route Number:  4
+--Utilization Rate is:  .0666666666666666666666666666666666666667 for Route Number:  5
+--Utilization Rate is:  .0285714285714285714285714285714285714286 for Route Number:  8
+--Utilization Rate is:  .04 for Route Number:  9
+--Average Utilization Rate over all routes is:  .0606349206349206349206349206349206349207
+
+
+-- FEATURE 15
+
+exec sp_satistical_count(3);
+
+--Output
+
+--Total no of schools:5
+--Total no of bus:10
+--Total no of bus routes:9
+--Total no of students taking bus:7
+--3 routes  with highest no of stops
+--Route id: 1 Stops:3
+--Route id: 4 Stops:3
+--Route id: 6 Stops:3
+--3 routes  with highest no of students
+--Route id: 1 Students:3
+--Route id: 4 Students:2
+--Route id: 5 Students:2
+--3 routes  with lowest no of students:
+--Route id:8 Students:1
+--Route id:9 Students:1
+--Route id:3 Students:1
